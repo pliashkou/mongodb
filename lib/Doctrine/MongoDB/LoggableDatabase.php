@@ -20,6 +20,7 @@
 namespace Doctrine\MongoDB;
 
 use Doctrine\Common\EventManager;
+use MongoDB\Database;
 
 /**
  * Wrapper for the MongoDB class with logging functionality.
@@ -46,12 +47,12 @@ class LoggableDatabase extends Database implements Loggable
      * @param integer      $numRetries     Number of times to retry queries
      * @param callable     $loggerCallable The logger callable
      */
-    public function __construct(Connection $connection, \MongoDB $mongoDB, EventManager $evm, $numRetries, $loggerCallable)
+    public function __construct(Connection $connection, $mongoDB, EventManager $evm, $numRetries, $loggerCallable)
     {
         if ( ! is_callable($loggerCallable)) {
             throw new \InvalidArgumentException('$loggerCallable must be a valid callback');
         }
-        parent::__construct($connection, $mongoDB, $evm, $numRetries);
+        parent::__construct($evm, $mongoDB->getDatabaseName());
         $this->loggerCallable = $loggerCallable;
     }
 
@@ -84,33 +85,27 @@ class LoggableDatabase extends Database implements Loggable
     /**
      * @see Database::command()
      */
-    public function command(array $data, array $options = array(), &$hash = null)
+    public function command($command, array $options = [])
     {
         $this->log(array(
             'command' => true,
-            'data' => $data,
+            'data' => $command,
             'options' => $options,
         ));
 
-        if (func_num_args() > 2) {
-            return parent::command($data, $options, $hash);
-        }
-
-        return parent::command($data, $options);
+        return parent::command($command, $options);
     }
 
     /**
      * @see Database::createCollection()
      */
-    public function createCollection($name, $cappedOrOptions = false, $size = 0, $max = 0)
+    public function createCollection($collectionName, array $options = [])
     {
-        $options = is_array($cappedOrOptions)
-            ? array_merge(array('capped' => false, 'size' => 0, 'max' => 0), $cappedOrOptions)
-            : array('capped' => $cappedOrOptions, 'size' => $size, 'max' => $max);
+        $options = array_merge(array('capped' => false, 'size' => 0, 'max' => 0), $options);
 
         $this->log(array(
             'createCollection' => true,
-            'name' => $name,
+            'name' => $collectionName,
             'options' => $options,
             /* @deprecated 1.1 Replaced by options; will be removed for 2.0 */
             'capped' => $options['capped'],
@@ -118,17 +113,17 @@ class LoggableDatabase extends Database implements Loggable
             'max' => $options['max'],
         ));
 
-        return parent::createCollection($name, $options);
+        return parent::createCollection($collectionName, $options);
     }
 
     /**
      * @see Database::drop()
      */
-    public function drop()
+    public function drop(array $options = [])
     {
-        $this->log(array('dropDatabase' => true));
+        $this->log(array('dropDatabase' => true, 'options'=> $options));
 
-        return parent::drop();
+        return parent::drop($options);
     }
 
     /**

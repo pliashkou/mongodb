@@ -15,6 +15,7 @@
     ],
     "require": {
         "php": "^5.5 || ^7.0",
+        "mongodb/mongodb": "^1.0.0",
         "doctrine/common": "^2.2"
     },
     "require-dev": {
@@ -22,8 +23,6 @@
         "jmikola/geojson": "^1.0"
     },
     "suggest": {
-        "ext-mongo" : "PHP Mongo extension",
-        "ext-mongodb" : "New version of PHP Mongo extension",
         "jmikola/geojson": "Support GeoJSON geometry objects in 2dsphere queries"
     },
     "autoload": {

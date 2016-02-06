@@ -79,7 +79,7 @@ class Collection
      * @param EventManager     $evm             EventManager instance
      * @param integer          $numRetries      Number of times to retry queries
      */
-    public function __construct(Database $database, \MongoCollection $mongoCollection, EventManager $evm, $numRetries = 0)
+    public function __construct(Database $database, \MongoDB\Collection $mongoCollection, EventManager $evm, $numRetries = 0)
     {
         $this->database = $database;
         $this->mongoCollection = $mongoCollection;

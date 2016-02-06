@@ -71,7 +71,7 @@ class Database
      * @param EventManager    $evm        EventManager instance
      * @param boolean|integer $numRetries Number of times to retry queries
      */
-    public function __construct(Connection $connection, \MongoDB $mongoDB, EventManager $evm, $numRetries = 0)
+    public function __construct(Connection $connection, \MongoDB\Database $mongoDB, EventManager $evm, $numRetries = 0)
     {
         $this->connection = $connection;
         $this->mongoDB = $mongoDB;
